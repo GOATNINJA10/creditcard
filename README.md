@@ -48,7 +48,7 @@ The customer-review pipeline creates:
 - `data/cleaned_data.csv`
 - `outputs/summary_tables.xlsx`
 - `outputs/Indian_Credit_Card_Brand_Intelligence_PoW.xlsx`
-- `outputs/brand_intelligence_deck.pptx`
+- `outputs/Indian_Credit_Card_Brand_Intelligence_PoW.pptx`
 - `outputs/charts/*.png`
 
 The Twitter-listening pipeline creates:

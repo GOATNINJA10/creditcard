@@ -4,7 +4,7 @@
 
 This script is written for the current 9-slide PowerPoint deck:
 
-`outputs/brand_intelligence_deck.pptx`
+`outputs/Indian_Credit_Card_Brand_Intelligence_PoW.pptx`
 
 Expected delivery time: **5–7 minutes**.
 

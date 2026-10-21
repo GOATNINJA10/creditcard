@@ -368,7 +368,7 @@ workbook portable and reproducible with the current Python tooling.
 
 File:
 
-[brand_intelligence_deck.pptx](./outputs/brand_intelligence_deck.pptx)
+[Indian_Credit_Card_Brand_Intelligence_PoW.pptx](./outputs/Indian_Credit_Card_Brand_Intelligence_PoW.pptx)
 
 The deck contains nine slides:
 
@@ -441,7 +441,7 @@ The second command regenerates:
 - `data/cleaned_data.csv`
 - `outputs/summary_tables.xlsx`
 - `outputs/Indian_Credit_Card_Brand_Intelligence_PoW.xlsx`
-- `outputs/brand_intelligence_deck.pptx`
+- `outputs/Indian_Credit_Card_Brand_Intelligence_PoW.pptx`
 - `outputs/charts/mentions.png`
 - `outputs/charts/sentiment.png`
 - `outputs/charts/topic_sentiment.png`

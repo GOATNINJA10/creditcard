@@ -266,6 +266,25 @@ def build_outputs(df: pd.DataFrame, summaries: dict[str, pd.DataFrame]) -> None:
     plt.savefig(chart_dir / "twitter_mentions.png", dpi=160)
     plt.close()
 
+    monthly_plot = summaries["Monthly_Mentions"].set_index("month")
+    monthly_plot.plot(kind="line", marker="o", title="Monthly Twitter mentions")
+    plt.xlabel("Month")
+    plt.ylabel("Number of mentions")
+    plt.tight_layout()
+    plt.savefig(chart_dir / "twitter_monthly_mentions.png", dpi=160)
+    plt.close()
+
+    engagement_plot = summaries["Engagement"]
+    engagement_plot.plot.bar(
+        x="bank_name",
+        y="average_engagement",
+        legend=False,
+        title="Average Twitter engagement by issuer",
+    ).set(xlabel="Issuer", ylabel="Average retweets + favourites")
+    plt.tight_layout()
+    plt.savefig(chart_dir / "twitter_engagement.png", dpi=160)
+    plt.close()
+
 
 def main() -> None:
     _, df = prepare_data()

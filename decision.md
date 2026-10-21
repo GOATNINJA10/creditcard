@@ -82,7 +82,7 @@ Regenerated:
 - `data/cleaned_data.csv`
 - `outputs/summary_tables.xlsx`
 - `outputs/Indian_Credit_Card_Brand_Intelligence_PoW.xlsx`
-- `outputs/brand_intelligence_deck.pptx`
+- `outputs/Indian_Credit_Card_Brand_Intelligence_PoW.pptx`
 - `outputs/charts/mentions.png`
 - `outputs/charts/sentiment.png`
 - `outputs/charts/topic_sentiment.png`

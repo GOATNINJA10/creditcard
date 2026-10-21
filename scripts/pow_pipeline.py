@@ -414,7 +414,7 @@ def add_textbox(slide, text: str, left: float, top: float, width: float, height:
 
 
 def build_deck(df: pd.DataFrame, summaries: dict[str, pd.DataFrame]) -> Path:
-    path = OUTPUT_DIR / "brand_intelligence_deck.pptx"
+    path = OUTPUT_DIR / "Indian_Credit_Card_Brand_Intelligence_PoW.pptx"
     prs = Presentation()
     prs.slide_width = Inches(13.333)
     prs.slide_height = Inches(7.5)
@@ -427,16 +427,39 @@ def build_deck(df: pd.DataFrame, summaries: dict[str, pd.DataFrame]) -> Path:
         f"{name}: {row.positive_share:.1f}% positive | {row.neutral_share:.1f}% neutral | {row.negative_share:.1f}% negative"
         for name, row in profile.iterrows()
     )
+    twitter_path = DATA_DIR / "twitter_listening_data.csv"
+    has_twitter = twitter_path.exists()
+    twitter_df = pd.read_csv(twitter_path) if has_twitter else pd.DataFrame()
+    twitter_counts = twitter_df["bank_name"].value_counts().to_dict() if has_twitter else {}
     slides = [
-        ("Indian Credit Card Brand Intelligence", "Proof of Work | Published credit-card review dataset | 21 October 2026"),
-        ("Objective and research questions", "How does issuer visibility compare?\nWhich topics drive positive and negative conversation?\nWhere can Marketing prioritize deeper investigation?"),
-        ("Data and methodology", f"{len(df)} deduplicated pure credit-card review records from the published GitHub source.\nOnly records labelled credit_card_review are included; app reviews and bank commentary are excluded.\nSource sentiment scores are mapped to positive, neutral and negative labels; topics use source labels where available."),
-        ("Dataset profile and quality", f"{len(df)} deduplicated records | {df['bank_name'].nunique()} issuers | {df['topic'].nunique()} topics\nAll unique SBI credit-card records are retained. Issuer volume is unbalanced, so percentages and sample sizes accompany raw counts. Axis is excluded."),
-        ("Share of voice proxy", voice + "\n\nThis is source-volume share, not market share or brand preference. SBI has more source records and therefore higher raw volume."),
-        ("Sentiment comparison", sentiment_text + "\n\nOnly 24 reviews are negative, so differences are directional rather than statistically conclusive."),
-        ("Topic-level competitor comparison", "Benefits is the dominant topic, followed by fees and rewards. SBI contributes most pure credit-card records; use within-issuer percentages rather than raw counts, while retaining all SBI records."),
-        ("Key findings and recommendations", "1. SBI Card dominates source volume; do not interpret raw counts as performance.\n2. HDFC and SBI show higher positive shares than ICICI in this sample.\n3. Negative reviews are too sparse for strong complaint rankings.\n4. Add Axis data and a permitted current source before making market claims."),
-        ("Limitations and next steps", "The analysis is pure credit-card review data but remains issuer-imbalanced, lacks Axis coverage, and has no reliable dates or engagement values. Reuse rights need confirmation.\nNext: obtain additional comparable card-level HDFC, ICICI and Axis reviews, QA labels, and refresh the dashboard."),
+        ("Indian Credit Card Brand Intelligence", "Proof of Work | Customer reviews + historical Twitter listening\nMarketing Strategy analyst workflow | 21 October 2026"),
+        ("Executive summary", f"Review module: {len(df):,} pure credit-card reviews across HDFC Bank, SBI Card and ICICI Bank.\nTwitter module: {len(twitter_df):,} filtered historical mentions across four issuers." if has_twitter else f"Review module: {len(df):,} pure credit-card reviews across HDFC Bank, SBI Card and ICICI Bank.\nTwitter module: run the separate listening script to add the historical mention view."),
+        ("Business questions", "Which issuers receive the most source visibility?\nWhat topics and sentiment patterns appear in customer reviews?\nHow can dated social mentions and engagement support recurring marketing reporting?"),
+        ("Data and methodology", f"{len(df):,} deduplicated pure customer reviews from the published GitHub dataset.\nSource scores are mapped to Positive, Neutral and Negative; topics use source labels where available.\nTwitter mentions are filtered and deduplicated separately because they are social-listening evidence, not necessarily customer reviews."),
+        ("Customer-review dataset profile", f"{len(df):,} records | {df['bank_name'].nunique()} issuers | {df['topic'].nunique()} topics\nSBI records are retained in full; issuer volume is unbalanced.\nAll review dates and engagement values are missing or unreliable, so this module is cross-sectional."),
+        ("Customer-review volume", "The chart shows source-volume composition, not market share or brand preference.\nUse the counts to understand the dataset and use sentiment percentages with sample sizes for directional comparison."),
+        ("Customer-review sentiment", sentiment_text + "\n\nNegative reviews are sparse in this source, so differences should not be treated as statistically conclusive."),
+        ("Customer-review topics", "Benefits is the dominant topic, followed by fees and rewards.\nUse topic patterns to identify questions for deeper investigation, not as a definitive ranking of customer priorities."),
+        ("Twitter social-listening module", f"{len(twitter_df):,} filtered unique mentions from 19 January to 19 March 2022.\nIssuer coverage: " + ", ".join(f"{k}: {v:,}" for k, v in twitter_counts.items()) + "\nThe Twitter workbook adds dates, retweets, favourites and calculated engagement."),
+        ("Twitter volume and trend", "The social-listening charts show historical mention volume by issuer and the monthly trend.\nThis is a dated source-volume view, not current market share."),
+        ("Twitter monthly trend", "The monthly view shows how mention volume changed during the historical collection window.\nUse it to identify spikes for follow-up, then inspect the underlying posts."),
+        ("Twitter engagement", "Average engagement is calculated as retweets plus favourites.\nUse it to prioritize high-visibility conversations, then review the underlying posts before making a recommendation."),
+        ("Recommendations and limitations", "1. Use the review workbook for customer-topic and sentiment discussion.\n2. Use the Twitter workbook for dated listening and engagement monitoring.\n3. Do not combine denominators across modules.\n4. Confirm reuse rights, add a current approved source and manually QA labels before external publication."),
+    ]
+    chart_images = [
+        None,
+        None,
+        None,
+        None,
+        None,
+        CHART_DIR / "mentions.png",
+        CHART_DIR / "sentiment.png",
+        CHART_DIR / "topic_sentiment.png",
+        None,
+        CHART_DIR / "twitter_mentions.png",
+        CHART_DIR / "twitter_monthly_mentions.png",
+        CHART_DIR / "twitter_engagement.png",
+        None,
     ]
     for idx, (title, body) in enumerate(slides):
         slide = prs.slides.add_slide(prs.slide_layouts[6])
@@ -444,12 +467,13 @@ def build_deck(df: pd.DataFrame, summaries: dict[str, pd.DataFrame]) -> Path:
         bg.solid()
         bg.fore_color.rgb = RGBColor(245, 248, 250)
         add_textbox(slide, title, 0.7, 0.6, 12, 0.8, 28, True)
-        add_textbox(slide, body, 0.9, 1.8, 11.4, 4.5, 20)
-        if idx == 4:
-            slide.shapes.add_picture(str(CHART_DIR / "mentions.png"), Inches(7.2), Inches(3.8), width=Inches(5.3))
-        if idx == 5:
-            slide.shapes.add_picture(str(CHART_DIR / "sentiment.png"), Inches(7.2), Inches(3.8), width=Inches(5.3))
-        add_textbox(slide, "Illustrative PoW — not for external publication without approved data", 0.7, 7.05, 11, 0.25, 9)
+        image = chart_images[idx]
+        if image is not None and image.exists():
+            add_textbox(slide, body, 0.85, 1.55, 5.2, 4.8, 17)
+            slide.shapes.add_picture(str(image), Inches(6.2), Inches(1.55), width=Inches(6.4))
+        else:
+            add_textbox(slide, body, 0.9, 1.8, 11.4, 4.5, 20)
+        add_textbox(slide, "Indian Credit Card Brand Intelligence PoW | Directional analysis | Verify reuse rights before distribution", 0.7, 7.05, 12, 0.25, 9)
     prs.save(path)
     return path
 
